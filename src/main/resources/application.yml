@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: demo
+
+  # Без этих настроек spring-boot-starter-data-r2dbc не может создать ConnectionFactory
+  # и приложение падает с "Failed to determine a suitable R2DBC Connection URL".
+  # Значения совпадают с DB_* из .env, которые compose.yml передаёт в контейнер postgres.
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/graphql_db
+    username: user
+    password: password
+    properties:
+      # macOS отдаёт JVM устаревшее имя зоны "Europe/Kiev"; драйвер шлёт его в SET TimeZone,
+      # а PostgreSQL 18 знает только "Europe/Kyiv" и рвёт соединение с ошибкой 22023.
+      timeZone: Europe/Kyiv
