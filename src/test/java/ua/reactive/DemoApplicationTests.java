@@ -1,4 +1,4 @@
-package ua.rxjava;
+package ua.reactive;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

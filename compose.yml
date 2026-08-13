@@ -3,6 +3,8 @@ name: rx_java
 volumes:
   postgres_data:
   pgadmin_data:
+  mongo_data:
+  mongo_configdb:
 
 services:
   postgres:
@@ -50,3 +52,28 @@ services:
         limits:
           memory: 512m
 
+  mongo:
+    image: mongo:7.0.34
+    container_name: mongo_learning
+    restart: always
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs", "--keyFile", "/etc/mongo-keyfile"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    volumes:
+      - mongo_data:/data/db
+      - mongo_configdb:/data/configdb
+      - ./data/mongo-keyfile:/etc/mongo-keyfile:ro
+    healthcheck:
+      test: |
+        test $$(mongosh --quiet -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval "try { rs.initiate({ _id: 'rs', members: [{ _id: 0, host: 'mongo:27017' }] }).ok } catch (_) { rs.status().ok }") -eq 1
+      interval: 5s
+      timeout: 30s
+      retries: 30
+    deploy:
+      resources:
+        limits:
+          memory: 512m

@@ -1,4 +1,4 @@
-package ua.rxjava;
+package ua.reactive.javaRx;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
@@ -21,13 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * timer это Hot (он всегда пушит события)
  * Cold (пассивный пока на него ктото не подпишется)- это те которые мы создаем руками, генераторами
  *
- * backpressure -  сними борются операторы filter, debounce, buffer, window
+ * backpressure - с ними борются операторы filter, debounce, buffer, window
+ * Observable не содержит поддержку backpressure
+ * Flowable содержит поддержку backpressure
  *
  * надо разобраться в event publisher
  * ставлю цепочку различных обработчиков они называются операторами в терминах RX java
- * <p>
- * CommandLineRunner выполняется один раз, после того как контекст Spring
- * полностью поднят. Ненужные примеры достаточно закомментировать в run().
  */
 @Component
 public class RxPlayground implements CommandLineRunner {

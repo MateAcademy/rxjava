@@ -2,6 +2,10 @@ spring:
   application:
     name: demo
 
+  sql:
+    init:
+      mode: always
+
   # Без этих настроек spring-boot-starter-data-r2dbc не может создать ConnectionFactory
   # и приложение падает с "Failed to determine a suitable R2DBC Connection URL".
   # Значения совпадают с DB_* из .env, которые compose.yml передаёт в контейнер postgres.
@@ -13,3 +17,28 @@ spring:
       # macOS отдаёт JVM устаревшее имя зоны "Europe/Kiev"; драйвер шлёт его в SET TimeZone,
       # а PostgreSQL 18 знает только "Europe/Kyiv" и рвёт соединение с ошибкой 22023.
       timeZone: Europe/Kyiv
+  # dev-профиль — переопределяется ниже через ---
+  mongodb:
+    uri: mongodb://mongo_user:mongo_password@localhost:27017/rxjava_db?authSource=admin&directConnection=true
+
+#logging:
+#  level:
+#    io.netty: DEBUG
+
+---
+# Продакшн-профиль: активируется через -Dspring.profiles.active=prod
+# или переменную среды SPRING_PROFILES_ACTIVE=prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  mongodb:
+    # Все три ноды перечислены явно — при падении primary
+    # драйвер автоматически переключится на новый primary.
+    uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo1:27017,mongo2:27017,mongo3:27017/${MONGO_DB}?authSource=admin&replicaSet=rs
