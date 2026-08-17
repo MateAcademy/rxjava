@@ -28,7 +28,7 @@ public class LanguageService {
 
     public Mono<Language> deleteByName(String name) {
         return languageRepository.findByName(name)
-                .flatMap(existing -> languageRepository.deleteByName(name).thenReturn(existing));
+                .flatMap(existing -> languageRepository.delete(existing).thenReturn(existing));
     }
 
     public Mono<Language> update(String name, Mono<Language> language) {
@@ -39,4 +39,5 @@ public class LanguageService {
                 }))
                 .flatMap(languageRepository::save);
     }
+
 }

@@ -1,6 +1,7 @@
 package ua.reactive.mongo.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +10,9 @@ import reactor.core.publisher.Mono;
 import ua.reactive.mongo.domain.Language;
 import ua.reactive.mongo.service.LanguageService;
 
+@Slf4j
 @RestController
-@RequestMapping("languages")
+@RequestMapping(value = "languages", produces = "application/json")
 @RequiredArgsConstructor
 public class LanguageController {
 
@@ -18,6 +20,7 @@ public class LanguageController {
 
     @GetMapping
     public Flux<Language> getLanguages() {
+        log.warn(Thread.currentThread().getName());
         return languageService.findAll();
     }
 
@@ -42,6 +45,7 @@ public class LanguageController {
     }
 
     @DeleteMapping("{name}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<ResponseEntity<Void>> delete(@PathVariable String name) {
         return languageService.deleteByName(name)
                 .<ResponseEntity<Void>>map(_ -> ResponseEntity.noContent().build())
